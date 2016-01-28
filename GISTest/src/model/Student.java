@@ -1,4 +1,4 @@
-package edu.uw.wangbei.model;
+package model;
 
 public class Student {
 	

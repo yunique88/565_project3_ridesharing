@@ -1,10 +1,10 @@
-package edu.uw.wangbei.dao;
+package dbConnecter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import edu.uw.wangbei.model.Student;
+import model.Student;
 
 public class StudentDAO {
 	public Student queryStudent(int studentID) throws Exception {

@@ -1,4 +1,4 @@
-package edu.uw.wangbei.controller;
+package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.uw.wangbei.dao.StudentDAO;
-import edu.uw.wangbei.model.Student;
+import model.Student;
+import dbConnecter.StudentDAO;
 
 /**
  * Servlet implementation class StudentServlet

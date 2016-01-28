@@ -1,4 +1,4 @@
-package edu.uw.wangbei.dao;
+package dbConnecter;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
