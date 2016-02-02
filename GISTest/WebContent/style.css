@@ -1,0 +1,26 @@
+<style>
+
+.navbar-right{
+    padding-right: 25px;}
+  
+.form-group{
+      padding: 10px;}
+
+      
+#nav {
+    margin-top: 50px;
+    line-height:30px;
+    background-color:#eeeeee;
+    height: 1000px;
+    width:200px;
+    float:left;
+    padding:5px; 
+}
+#section {
+    margin-top: 50px;
+    width:350px;
+    float:left;
+    padding:5px; 
+}
+
+</style>
