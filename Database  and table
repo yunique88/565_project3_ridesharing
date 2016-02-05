@@ -10,19 +10,21 @@ CREATE TABLE IF NOT EXISTS GISDatabase.`UserInfo` (
   PRIMARY KEY (`UserName`)  COMMENT '')
 ENGINE = InnoDB
 
-CREATE TABLE IF NOT EXISTS GISDatabase.`History` (           --------change to UserSearchParaHistory
-  `id` INT NOT NULL COMMENT '',
-  `UserName` VARCHAR(45) NULL COMMENT '',
-  
-  `Parameters` VARCHAR(45) NULL COMMENT '',
-  PRIMARY KEY (`id`)  COMMENT '',
-  INDEX `Username_idx` (`UserName` ASC)  COMMENT '',
-  CONSTRAINT `Username`
-    FOREIGN KEY (`UserName`)
-    REFERENCES `GISDatabase`.`UserInfo` (`UserName`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB
+CREATE TABLE `UserParaHistory` (
+  `userName` varchar(45) NOT NULL,
+  `startTime` datetime DEFAULT NULL,
+  `startTimeMargin` int(11) DEFAULT NULL,
+  `endTime` datetime DEFAULT NULL,
+  `endTimeMargin` int(11) DEFAULT NULL,
+  `departure` point DEFAULT NULL,
+  `departureMargin` int(11) DEFAULT NULL,
+  `destination` point DEFAULT NULL,
+  `destinationMargin` int(11) DEFAULT NULL,
+  `departureDate` date DEFAULT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`userName`),
+  UNIQUE KEY `userName_UNIQUE` (`userName`)
+) ENGINE=InnoDB 
 
 
 CREATE TABLE IF NOT EXISTS GISDatabase.`UserTraces` (
