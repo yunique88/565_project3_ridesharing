@@ -21,7 +21,7 @@ public class UserParaHistoryDAO {
                         +" ST_X(destination) as destinationX, ST_Y(destination) as destinationY,"
                         +" destinationMargin,departureDate,updateTime "
                         +" from UserParaHistory "
-                        +" where userName = " + userName);
+                        +" where userName = '" + userName+"'");
 			
 			if(rs.next()) {
 				UserParaHistory uPHistory = new UserParaHistory(rs.getString("userName"), rs.getTime("startTime"), rs.getInt("startTimeMargin"), 

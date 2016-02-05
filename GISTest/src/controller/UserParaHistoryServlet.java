@@ -10,14 +10,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import model.UserParaHistory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
+
 import dbConnecter.UserParaHistoryDAO;
 
 /**
- * Servlet implementation class UserParahistoryServlet
+ * Servlet implementation class UserParaHistoryServlet
  */
 @WebServlet("/UserParaHistoryServlet")
 public class UserParaHistoryServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -39,7 +44,7 @@ public class UserParaHistoryServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		response.setContentType("text/html");
+		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		
 		String userName = request.getParameter("userName").toString();
@@ -52,17 +57,17 @@ public class UserParaHistoryServlet extends HttpServlet {
 			UserParaHistory userParaHistory = userParaHistoryDAO.query(userName);
 			
 			if(userParaHistory == null) {
-				out.println("UserParahistory for username " + userName + " does not exist.");
+				response.setStatus(404);
+				out.println(String.format("User <%s> not found", userName));
 				System.out.println("UserParahistory for username " + userName + " does not exist.");
 			} else {
-				request.setAttribute(userName, userParaHistory.getUserName());
-				request.getRequestDispatcher("TestServlet.jsp").forward(request,response);
-				out.println("Found: " + userParaHistory.toString());
+				out.println(OBJECT_MAPPER.writeValueAsString(Lists.newArrayList(userParaHistory)));
 				System.out.println("Found: " + userParaHistory.toString());
 			}
 			
 		} catch(Exception e) {
-			out.println("ERROR - " + e.getMessage());
+			response.setStatus(500);
+			out.println("ERROR: " + e.getMessage());
 			System.out.println("ERROR - " + e.getMessage());
 		}
 		
