@@ -5,6 +5,7 @@ USE gisdatabase;
 CREATE TABLE IF NOT EXISTS GISDatabase.`UserInfo` (
   `UserName` VARCHAR(45) NOT NULL COMMENT '',
   `Password` VARCHAR(45) NULL COMMENT '',
+  `PhoneNo` VARCHAR(20) NULL COMMENT '',
   `HomeLocation` POINT NULL COMMENT '',
   `Destination` POINT NULL COMMENT '',
   PRIMARY KEY (`UserName`)  COMMENT '')
@@ -28,10 +29,11 @@ CREATE TABLE `UserParaHistory` (
 
 
 CREATE TABLE IF NOT EXISTS GISDatabase.`UserTraces` (
-  `TraceName` VARCHAR(45) NOT NULL COMMENT '',
+`TraceId` int NOT NULL COMMENT '',
+  `TraceName` VARCHAR(45)  NULL COMMENT '',
   `UserName` VARCHAR(45) NULL COMMENT '',
   `Coords` LINESTRING NULL COMMENT '',
-  PRIMARY KEY (`TraceName`)  COMMENT '',
+  PRIMARY KEY (`TraceId`)  COMMENT '',
   INDEX `Username_idx` (`UserName` ASC)  COMMENT '',
   CONSTRAINT `Username1`
     FOREIGN KEY (`UserName`)
