@@ -28,16 +28,21 @@ CREATE TABLE `UserParaHistory` (
 ) ENGINE=InnoDB 
 
 
-CREATE TABLE IF NOT EXISTS GISDatabase.`UserTraces` (
-`TraceId` int NOT NULL COMMENT '',
+CREATE TABLE `UserTraces` (
+  `TraceId` int NOT NULL COMMENT '',
+  `userName` varchar(45) NOT NULL,
   `TraceName` VARCHAR(45)  NULL COMMENT '',
-  `UserName` VARCHAR(45) NULL COMMENT '',
-  `Coords` LINESTRING NULL COMMENT '',
-  PRIMARY KEY (`TraceId`)  COMMENT '',
-  INDEX `Username_idx` (`UserName` ASC)  COMMENT '',
-  CONSTRAINT `Username1`
-    FOREIGN KEY (`UserName`)
-    REFERENCES `GISDatabase`.`UserInfo` (`UserName`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB
+  `startTime` datetime DEFAULT NULL,
+  `startTimeMargin` int(11) DEFAULT NULL,
+  `endTime` datetime DEFAULT NULL,
+  `endTimeMargin` int(11) DEFAULT NULL,
+  `departure` point DEFAULT NULL,
+  `departureMargin` int(11) DEFAULT NULL,
+  `destination` point DEFAULT NULL,
+  `destinationMargin` int(11) DEFAULT NULL,
+  `departureDate` date DEFAULT NULL,
+   `Coords` LINESTRING NULL COMMENT '',
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`TraceId`),
+  UNIQUE KEY `TraceId_UNIQUE` (`TraceId`)
+) ENGINE=InnoDB 
