@@ -7,6 +7,7 @@ import java.sql.Statement;
 import model.Student;
 
 public class StudentDAO {
+	
 	public Student queryStudent(int studentID) throws Exception {
 		
 		Connection conn = DBUtils.getConnection();
@@ -17,7 +18,6 @@ public class StudentDAO {
 			stmt = conn.createStatement();
 			
 			ResultSet rs = stmt.executeQuery("select * from student where studentID = " + studentID);
-			
 			if(rs.next()) {
 				Student student = new Student(rs.getInt("studentID"), rs.getString("studentName"), rs.getInt("age"), rs.getString("Studentcol"));
 				return student;

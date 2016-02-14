@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+<meta charset="utf-8">
+<title>Directions service</title>
+<style>
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+#map {
+	height: 100%;
+	width: 100%;
+}
+
+#floating-panel {
+	position: absolute;
+	top: 10px;
+	left: 25%;
+	z-index: 5;
+	background-color: #fff;
+	padding: 5px;
+	border: 1px solid #999;
+	text-align: center;
+	font-family: 'Roboto', 'sans-serif';
+	line-height: 30px;
+	padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+	<div id="floating-panel">
+		<input id='traceName'> <input id='go' type='button' value="Show">
+		<div id='errorMessage'></div>
+	</div>
+	<div id="map"></div>
+
+	<script>
+		function initMap() {
+			var directionsService = new google.maps.DirectionsService;
+			var directionsDisplay = new google.maps.DirectionsRenderer;
+
+			var map = new google.maps.Map(document.getElementById('map'), {
+				zoom : 7,
+				center : {
+					lat : 47.608931,
+					lng : -122.257249
+				},
+				draggable: true
+			});
+
+			directionsDisplay.setMap(map);
+
+			function queryRoute() {
+				
+				$('#errorMessage').html("");
+				
+				$.post("QueryRoute", {
+					"traceName" : $("#traceName").val()
+				})
+				.success(
+						function(result) {
+							console.log(result);
+							var coords = JSON.parse(result.route).coordinates
+							var start = new google.maps.LatLng(
+									coords[0][0],
+									coords[0][1]);
+							
+							var wayPoints = [];
+							if(coords.length > 2) {
+								for(var i = 1; i < coords.length - 1; i++) {
+									wayPoints.push({
+										location : new google.maps.LatLng(coords[i][0], coords[i][1])
+									});
+								}
+							}
+							var end = new google.maps.LatLng(
+									coords[coords.length-1][0],
+									coords[coords.length-1][1]);
+
+							calculateAndDisplayRoute(directionsService,
+									directionsDisplay, start, wayPoints, end);
+						})
+				.fail(
+						function(data) {
+							$("#errorMessage").html("<font color='red'>Not Found</font>");
+						});
+			}
+
+			var onChangeHandler = function() {
+				calculateAndDisplayRoute(directionsService, directionsDisplay);
+			};
+
+			document.getElementById('go').addEventListener('click', queryRoute);
+		}
+
+		function calculateAndDisplayRoute(directionsService, directionsDisplay, start, waypts, end) {
+			directionsService.route({
+				origin : start,
+				destination : end,
+				waypoints: waypts,
+				travelMode : google.maps.TravelMode.DRIVING
+			}, function(response, status) {
+				if (status === google.maps.DirectionsStatus.OK) {
+					directionsDisplay.setDirections(response);
+				} else {
+					window.alert('Directions request failed due to ' + status);
+				}
+			});
+		}
+	</script>
+
+	<script
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjvAlMik-LMCY8hr7dX9lrCzAunKyfzQk&signed_in=true&callback=initMap"
+		async defer></script>
+</body>
+</html>

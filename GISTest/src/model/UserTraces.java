@@ -4,9 +4,10 @@ import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Time;
 
-public class UserParaHistory {
-	
+public class UserTraces {
+	private int traceID;
 	private String userName;
+	private String traceName;
 	private Time startTime;
 	private int startTimeMargin;
 	private Time endTime;
@@ -19,25 +20,27 @@ public class UserParaHistory {
 	private double destinationY;
 	private int destinationMargin;
 	private Date departureDate;
+	private Blob coords;
 	private Time updateTime;
 	
 	
-	public UserParaHistory(String userName,Time startTime,int startTimeMargin,Time endTime,int endTimeMargin,Blob departure,
+	public UserTraces(int traceID,String userName,String traceName,Time startTime,int startTimeMargin,Time endTime,int endTimeMargin,Blob departure,
 			double departureX,double departureY,int departureMargin,double destinationX,double destinationY,int destinationMargin,
-			Date departureDate,Time updateTime) {
+			Date departureDate,Blob coords,Time updateTime) {
+		this.traceID = traceID;
 		this.userName  = userName;
+		this.traceName = traceName;
 		this.startTime  = startTime;
 		this.startTimeMargin  = startTimeMargin;
 		this.endTime  = endTime;
 		this.endTimeMargin  = endTimeMargin;
-		this.departure = departure;
-		this.departureX  = departureX;
-		this.departureY  = departureY;
-		this.departureMargin  = departureMargin;
+		this.departure  = departure; //test Blob
+		this.departureMargin  = departureMargin; 
 		this.destinationX  = destinationX;
 		this.destinationY  = destinationY;
 		this.destinationMargin = destinationMargin;
 		this.departureDate  = departureDate;
+		this.coords = coords;
 		this.updateTime  = updateTime;
 		
 	}
@@ -196,15 +199,6 @@ public class UserParaHistory {
 		this.updateTime = updateTime;
 	}
 
-	
-	@Override
-	public String toString() {
-		return userName +"@"+ startTime +"@"+ startTimeMargin +"@"+ endTime +"@"+ endTimeMargin +"@"
-				+ departure + "@"
-				+ departureX +"@"+ departureY +"@"+ departureMargin +"@"+ destinationX +"@"+ destinationY +"@"
-				+ destinationMargin +"@"+ departureDate +"@"+ updateTime;
-	}
-
 	public Blob getDeparture() {
 		return departure;
 	}
@@ -212,4 +206,29 @@ public class UserParaHistory {
 	public void setDeparture(Blob departure) {
 		this.departure = departure;
 	}
+
+	public int getTraceID() {
+		return traceID;
+	}
+
+	public void setTraceID(int traceID) {
+		this.traceID = traceID;
+	}
+
+	public String getTraceName() {
+		return traceName;
+	}
+
+	public void setTraceName(String traceName) {
+		this.traceName = traceName;
+	}
+
+	public Blob getCoords() {
+		return coords;
+	}
+
+	public void setCoords(Blob coords) {
+		this.coords = coords;
+	}
+
 }
