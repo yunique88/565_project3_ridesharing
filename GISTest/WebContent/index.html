@@ -16,39 +16,55 @@
   <div class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
       <div class="navbar-header">
-          <div class="navbar-brand"><a href="#">RideShare</a></div>
+          <div class="navbar-brand">RideShare</div>
       </div>
       <ul id="signInDropdown" class="nav navbar-nav navbar-right">
-        <li class="dropdown">
+        <li id="dropdownOpenClose" class="dropdown">
         <button type="button" id="dropdownMenu1" data-toggle="dropdown" class="btn btn-default navbar-btn dropdown-toggle">Sign in<span class="caret"></span></button>
         <ul class="dropdown-menu">
           <li>
-            <form class="navbar-form form" role="form">
+          	<!-- LOGIN FORM -->
+              <form class="navbar-form form" method="post" id="loginForm">
               <div class="form-group">
-                  <input id="emailInput" placeholder="email address" class="form-control" type="email">
+                  <input placeholder="email address" class="form-control" type="text" id="email" name="email" />
               </div>
               <div class="form-group">
-                  <input id="passwordInput" placeholder="password" class="form-control" type="password">
+                  <input placeholder="password" class="form-control" type="text" id="pswd" name="pswd" />
               </div>
-              <!-- could need these designations later
-              <div id="signInInput" data-toggle="buttons" class="btn-group btn-group-xs btn-group-justified form-group">
-                <label class="btn btn-default">
-                    <input type="radio">Admin
-                </label>
-                <label class="btn btn-default">
-                    <input type="radio">Fellow
-                </label>
-                <label class="btn btn-default">
-                    <input type="radio">Coordinator
-                </label>
-              </div>-->
               <div class="form-group">
-                <button type="submit" class="btn btn-primary form-control" method=post onclick="return login();" />Sign In</button></div>
-
-                <button type="submit" class="btn btn-primary form-control">Register</button></div>
-              <!-- <div class="form-group">   -->
-                <!-- <span class="pull-right"><a href="#">Need help?</a></span></div> -->
-            </form>
+              <div id="loginMsg"></div><br>              
+              <input class="btn btn-primary form-control" type="submit" id="mySubmit" value="Login"/>
+              <button type="submit" class="btn btn-primary form-control" onclick="return register();">Register</button></div>
+              </form>
+            
+              <input class="btn btn-primary form-control hide" type="submit" id="logout" value="Logout"/>
+            
+            <!-- REGISTER FORM -->
+              <form class="navbar-form form hide" method="post" id="registerForm">
+              <button class="btn btn-info form-control" onclick="return backToSignIn();"><- Back to Sign In</button>
+              <br><br>
+              <h4>Please type in your information below:</h4>
+              <div class="form-group">
+                  <input placeholder="Email address" class="form-control" type="text" id="emailR" name="email" />
+              </div>
+              <div class="form-group">
+                  <input placeholder="Password" class="form-control" type="text" id="pswdR" name="pswd" />
+              </div>
+              <div class="form-group">
+                  <input placeholder="First Name" class="form-control" type="text" id="fNameR" name=""fName"" />
+              </div>
+              <div class="form-group">
+                  <input placeholder="Last Name" class="form-control" type="text" id="lNameR" name="lName" />
+              </div>
+              <div class="form-group">
+                  <input placeholder="Phone Number" class="form-control" type="text" id="phoneNumR" name="phoneNum" />
+              </div>
+              <div class="form-group">
+              <div id="registerMsg"></div>
+              <input class="btn btn-primary form-control" type="submit" id="myRegister" value="Register Me!"/>
+              </form>
+              
+              
           </li>
         </ul>
         </li>
@@ -59,19 +75,28 @@
 
   <!-- LEFT COLUMN INFO -->
   <div id="nav">
-  Slider should go here
+    
+      <div data-role="rangeslider">
+        <label for="price-min">Price:</label>
+        <input type="range" name="price-min" id="price-min" value="200" min="0" max="1000">
+        <label for="price-max">Price:</label>
+        <input type="range" name="price-max" id="price-max" value="800" min="0" max="1000">
+      </div>
+
     <form>
+      <h4><u>% Matches</u></h4>
       % Time Match: (0-100)<br>
       <input type="text" name="firstname"><br>
       % Route Match: (0-100)<br>
       <input type="text" name="lastname"><br>
       % match on other: (0-100)<br>
       <input type="text" name="lastname"><br>
-      <input type="submit" value="Submit">
+      <input type="submit" value="Submit" onclick="return percentageSubmit()">
     </form>
-  <br><br><br>
+  <br><br>
 
     <form>
+      <h4><u>My Route</u></h4>
       Start Time:<br>
       <input type="text" name="firstname"><br>
       End Time:<br>
@@ -83,11 +108,12 @@
       End Location:<br>
       <input type="text" name="lastname"><br>
       Location Margin:<br>
-      <input type="text" name="lastname">
+      <input type="text" name="lastname"><br>
       Limit:<br>
-      <input type="text" name="lastname">
-      <input type="submit" value="Submit">
+      <input type="text" name="lastname"><br>
+      <input type="submit" value="Submit" onclick="return myRouteSubmit()">
     </form>
+    <br><br>  
   </div>
 
 
