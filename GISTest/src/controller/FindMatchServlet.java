@@ -1,10 +1,10 @@
 package controller;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Blob;
 import java.sql.Date;
-import java.sql.Time;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,13 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import model.UserParaHistory;
 import model.UserTraces;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
-import dbConnecter.UserParaHistoryDAO;
 import dbConnecter.UserTracesDAO;
 
 /**
@@ -53,27 +51,29 @@ public class FindMatchServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		
 		int traceID = new Integer(request.getParameter("traceID"));
+		/*
 		String userName = request.getParameter("userName");
-		String startTime = request.getParameter("startTime");
+	//	Date startTime = (Date) new SimpleDateFormat("hh:mm:ss").parse(request.getParameter("startTime"));
 		int startTimeMargin = new Integer(request.getParameter("startTimeMargin"));
-		String endTime = request.getParameter("endTime");
+	//	Date endTime = (Date) new SimpleDateFormat("hh:mm:ss").parse(request.getParameter("endTime"));
 		int endTimeMargin = new Integer(request.getParameter("endTimeMargin"));
-		String departure = request.getParameter("departure");
-		String departureMargin = request.getParameter("departureMargin");
-		String destination = request.getParameter("destination");
-		String destinationMargin = request.getParameter("destinationMargin");
-		String departureDate = request.getParameter("departureDate");
-		String matchRate = request.getParameter("matchRate");
+		Point departure = new Point(new Integer(request.getParameter("departureX")),new Integer(request.getParameter("departureY")));
+		int departureMargin = new Integer(request.getParameter("departureMargin"));
+		Point destination = new Point(new Integer(request.getParameter("destinationX")),new Integer(request.getParameter("destinationY")));
+		int destinationMargin = new Integer(request.getParameter("destinationMargin"));
+//		Date departureDate = (Date) new SimpleDateFormat("hh:mm:ss").parse(request.getParameter("departureDate"));
+		double matchRate = Double.parseDouble(request.getParameter("matchRate"));
+		*/
 		System.out.println("querying " + traceID);
 		UserTracesDAO userTracesDAO = new UserTracesDAO();
 		
 		try {
-			UserTraces userTraces = null; 
-//					userTracesDAO.findMatch(traceID, userName,
-//					 startTime, startTimeMargin, endTime, endTimeMargin, departure,
-//					 departureMargin, destination, destinationMargin,
-//					 departureDate, matchRate);
-			
+			UserTraces userTraces = userTracesDAO.findMatch(traceID);
+					/*userTracesDAO.findMatch(traceID, userName,
+					 startTime, startTimeMargin, endTime, endTimeMargin, departure,
+					 departureMargin, destination, destinationMargin,
+					 departureDate, matchRate);
+			*/
 			if(userTraces == null) {
 				response.setStatus(404);
 				out.println(String.format("User <%s> not found", traceID));
