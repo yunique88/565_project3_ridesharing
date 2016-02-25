@@ -3,8 +3,7 @@ package controller;
 import java.awt.Point;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -50,37 +49,65 @@ public class FindMatchServlet extends HttpServlet {
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		
-		int traceID = new Integer(request.getParameter("traceID"));
-		/*
+		int traceID = 0;
+		if (request.getParameter("traceID") != null){
+			traceID = new Integer(request.getParameter("traceID"));
+		}
 		String userName = request.getParameter("userName");
-	//	Date startTime = (Date) new SimpleDateFormat("hh:mm:ss").parse(request.getParameter("startTime"));
-		int startTimeMargin = new Integer(request.getParameter("startTimeMargin"));
-	//	Date endTime = (Date) new SimpleDateFormat("hh:mm:ss").parse(request.getParameter("endTime"));
-		int endTimeMargin = new Integer(request.getParameter("endTimeMargin"));
-		Point departure = new Point(new Integer(request.getParameter("departureX")),new Integer(request.getParameter("departureY")));
-		int departureMargin = new Integer(request.getParameter("departureMargin"));
-		Point destination = new Point(new Integer(request.getParameter("destinationX")),new Integer(request.getParameter("destinationY")));
-		int destinationMargin = new Integer(request.getParameter("destinationMargin"));
-//		Date departureDate = (Date) new SimpleDateFormat("hh:mm:ss").parse(request.getParameter("departureDate"));
-		double matchRate = Double.parseDouble(request.getParameter("matchRate"));
-		*/
+		String startTime = request.getParameter("startTime");
+		int startTimeMargin = 0;
+		if (request.getParameter("startTimeMargin") != null){
+			startTimeMargin = new Integer(request.getParameter("startTimeMargin"));
+		}
+		 
+		String endTime = request.getParameter("endTime");
+		int endTimeMargin = 0;
+		if (request.getParameter("endTimeMargin") != null){
+			startTimeMargin = new Integer(request.getParameter("endTimeMargin"));
+		}
+		
+		Point departure = null;
+		if (request.getParameter("departureX") != null && request.getParameter("departureY") != null){
+			departure = new Point(new Integer(request.getParameter("departureX")),new Integer(request.getParameter("departureY")));
+			
+		}
+		
+		int departureMargin = 0;
+		if (request.getParameter("departureMargin") != null){
+			startTimeMargin = new Integer(request.getParameter("departureMargin"));
+		}
+		
+		Point destination = null;
+		if (request.getParameter("destinationX") != null && request.getParameter("destinationY") != null){
+			departure = new Point(new Integer(request.getParameter("destinationX")),new Integer(request.getParameter("destinationY")));
+			
+		}
+		int destinationMargin = 0;
+		if (request.getParameter("destinationMargin") != null){
+			destinationMargin = new Integer(request.getParameter("destinationMargin"));
+		}
+		String departureDate = request.getParameter("departureDate");
+		double matchRate = 0.0;
+		if (request.getParameter("matchRate") != null){
+			matchRate = new Integer(request.getParameter("matchRate"));
+		}
+		
 		System.out.println("querying " + traceID);
 		UserTracesDAO userTracesDAO = new UserTracesDAO();
 		
 		try {
-			UserTraces userTraces = userTracesDAO.findMatch(traceID);
-					/*userTracesDAO.findMatch(traceID, userName,
+			ArrayList<UserTraces> userTracesList = userTracesDAO.findMatch(traceID, userName,
 					 startTime, startTimeMargin, endTime, endTimeMargin, departure,
 					 departureMargin, destination, destinationMargin,
 					 departureDate, matchRate);
-			*/
-			if(userTraces == null) {
+			 
+			if(userTracesList == null) {
 				response.setStatus(404);
 				out.println(String.format("User <%s> not found", traceID));
 				System.out.println("userTraces for traceID " + traceID + " does not exist.");
 			} else {
-				out.println(OBJECT_MAPPER.writeValueAsString(Lists.newArrayList(userTraces)));
-				System.out.println("Found: " + userTraces.toString());
+				out.println(OBJECT_MAPPER.writeValueAsString(Lists.newArrayList(userTracesList)));
+				System.out.println("Found: " + userTracesList.toString());
 			}
 			
 		} catch(Exception e) {
