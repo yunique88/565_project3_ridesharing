@@ -27,13 +27,14 @@ public class UserTracesDAO {
 		//	Boolean rs1 = callStmt.execute("{call new_procedure("+traceID+")}");
 			ResultSet rs = stmt.executeQuery("select traceID,userName,"
 						+ " ST_AsGeoJson(coords) as coords,"
-						+ " ST_AsGeoJson(time) as time"
-                        + " from UserTraces ;"
+						+ " ST_AsGeoJson(time) as time "
+                        + " from finalmatch "
+                        + " where cluster > 0;"
                         + " ");
 			ArrayList<UserTraces> list = new ArrayList<UserTraces>();
 			while(rs.next()) {
 				UserTraces traces = new UserTraces(rs.getInt("traceID"),rs.getString("userName"),
-													rs.getString("coords"),rs.getString("time"));
+													rs.getObject("coords"),rs.getObject("time"));
 				list.add(traces);
 				
 			}

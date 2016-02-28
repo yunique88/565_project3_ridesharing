@@ -6,48 +6,45 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Time;
+import java.util.ArrayList;
 
 import model.UserParaHistory;
 
-import org.junit.Test;
-
 public class UserParaHistoryDAO {
 	
-	@Test
-	public void test() throws Exception {
-		UserParaHistory u = query("Bei");
-		System.out.println(u.getDeparture());
-	}
-	
-	public UserParaHistory query(String userName) throws Exception {
+	public ArrayList<UserParaHistory> query(String userName) throws Exception {
 		
 		Connection conn = DBUtils.getConnection();
-		
+		ArrayList<UserParaHistory> uPHistoryList = new ArrayList<UserParaHistory>();
 		Statement stmt = null;
 		try {
 			
 			stmt = conn.createStatement();
 			
-			ResultSet rs = stmt.executeQuery("select userName,startTime,startTimeMargin,endTime,endTimeMargin,"
-						+" departure,"	//test blob
-                        +" ST_X(departure) as departureX, ST_Y(departure) as departureY,departureMargin,"
-                        +" ST_X(destination) as destinationX, ST_Y(destination) as destinationY,"
+			ResultSet rs = stmt.executeQuery("select traceId,userName,startTime,startTimeMargin,endTime,endTimeMargin,"
+						+" ST_AsText(departure) as departure,"	
+                        +" departureMargin,"
+                        +" ST_AsText(destination) as destination,"
                         +" destinationMargin,departureDate,updateTime "
                         +" from UserParaHistory "
-                        +" where userName = '" + userName+"'");
+                        +" where userName = '" + userName+"'"
+                        +" ORDER BY traceId DESC");
 			
-			if(rs.next()) {
+			while(rs.next()) {
 				UserParaHistory uPHistory = new UserParaHistory(
+						rs.getInt("traceId"),
 						rs.getString("userName"), rs.getTime("startTime"), rs.getInt("startTimeMargin"), 
 						rs.getTime("endTime"),rs.getInt("endTimeMargin"),
-						rs.getBlob("departure"), 
-						rs.getDouble("departureX"),rs.getDouble("departureY"),rs.getInt("departureMargin"),
-						rs.getDouble("destinationX"),rs.getDouble("destinationY"),rs.getInt("destinationMargin"),
+						rs.getObject("departure"),
+						rs.getInt("departureMargin"),
+						rs.getObject("destination"),rs.getInt("destinationMargin"),
 						rs.getDate("departureDate"),rs.getTime("updateTime"));
-				return uPHistory;
+				uPHistoryList.add(uPHistory);
+				
 			}
 			
-			return null;
+			return uPHistoryList;
+			
 		} catch (Exception e) {
 			throw e;
 		} finally {

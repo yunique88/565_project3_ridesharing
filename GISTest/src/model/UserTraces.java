@@ -3,11 +3,11 @@ package model;
 public class UserTraces {
 	private int traceID;
 	private String userName;
-	private String coords;
-	private String time;
+	private Object coords;
+	private Object time;
 	
 	
-	public UserTraces(int traceID,String userName,String coords,String time) {
+	public UserTraces(int traceID,String userName,Object coords,Object time) {
 		this.traceID = traceID;
 		this.userName  = userName;
 		this.coords = coords;
@@ -29,19 +29,19 @@ public class UserTraces {
 		this.userName = userName;
 	}
 
-	public String getCoords() {
+	public Object getCoords() {
 		return coords;
 	}
 
-	public void setCoords(String coords) {
+	public void setCoords(Object coords) {
 		this.coords = coords;
 	}
 
-	public String getTime() {
+	public Object getTime() {
 		return time;
 	}
 
-	public void setTime(String time) {
+	public void setTime(Object time) {
 		this.time = time;
 	}
 

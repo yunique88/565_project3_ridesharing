@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -54,15 +55,15 @@ public class UserParaHistoryServlet extends HttpServlet {
 		
 		try {
 			
-			UserParaHistory userParaHistory = userParaHistoryDAO.query(userName);
+			ArrayList<UserParaHistory> userParaHistoryList = userParaHistoryDAO.query(userName);
 			
-			if(userParaHistory == null) {
+			if(userParaHistoryList == null) {
 				response.setStatus(404);
 				out.println(String.format("User <%s> not found", userName));
 				System.out.println("UserParahistory for username " + userName + " does not exist.");
 			} else {
-				out.println(OBJECT_MAPPER.writeValueAsString(Lists.newArrayList(userParaHistory)));
-				System.out.println("Found: " + userParaHistory.toString());
+				out.println(OBJECT_MAPPER.writeValueAsString(Lists.newArrayList(userParaHistoryList)));
+				System.out.println("Found: " + userParaHistoryList.toString());
 			}
 			
 		} catch(Exception e) {

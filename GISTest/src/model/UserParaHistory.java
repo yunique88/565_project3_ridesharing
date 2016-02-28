@@ -1,41 +1,36 @@
 package model;
 
-import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Time;
 
+
 public class UserParaHistory {
-	
+	private int traceId;
 	private String userName;
 	private Time startTime;
 	private int startTimeMargin;
 	private Time endTime;
 	private int endTimeMargin;
-	private Blob departure;
-	private double departureX;
-	private double departureY;
+	private Object departure;
 	private int departureMargin;
-	private double destinationX;
-	private double destinationY;
+	private Object destination;
 	private int destinationMargin;
 	private Date departureDate;
 	private Time updateTime;
 	
 	
-	public UserParaHistory(String userName,Time startTime,int startTimeMargin,Time endTime,int endTimeMargin,Blob departure,
-			double departureX,double departureY,int departureMargin,double destinationX,double destinationY,int destinationMargin,
+	public UserParaHistory(int traceId, String userName,Time startTime,int startTimeMargin,Time endTime,int endTimeMargin,
+			Object departure,int departureMargin,Object destination,int destinationMargin,
 			Date departureDate,Time updateTime) {
+		this.traceId = traceId;
 		this.userName  = userName;
 		this.startTime  = startTime;
 		this.startTimeMargin  = startTimeMargin;
 		this.endTime  = endTime;
 		this.endTimeMargin  = endTimeMargin;
 		this.departure = departure;
-		this.departureX  = departureX;
-		this.departureY  = departureY;
 		this.departureMargin  = departureMargin;
-		this.destinationX  = destinationX;
-		this.destinationY  = destinationY;
+		this.destination  = destination;
 		this.destinationMargin = destinationMargin;
 		this.departureDate  = departureDate;
 		this.updateTime  = updateTime;
@@ -101,31 +96,6 @@ public class UserParaHistory {
 	}
 
 
-
-	public double getDepartureX() {
-		return departureX;
-	}
-
-
-
-	public void setDepartureX(double departureX) {
-		this.departureX = departureX;
-	}
-
-
-
-	public double getDepartureY() {
-		return departureY;
-	}
-
-
-
-	public void setDepartureY(double departureY) {
-		this.departureY = departureY;
-	}
-
-
-
 	public int getDepartureMargin() {
 		return departureMargin;
 	}
@@ -138,29 +108,15 @@ public class UserParaHistory {
 
 
 
-	public double getDestinationX() {
-		return destinationX;
+	public Object getDestination() {
+		return destination;
 	}
 
 
 
-	public void setDestinationX(double destinationX) {
-		this.destinationX = destinationX;
+	public void setDestination(double destination) {
+		this.destination = destination;
 	}
-
-
-
-	public double getDestinationY() {
-		return destinationY;
-	}
-
-
-
-	public void setDestinationY(double destinationY) {
-		this.destinationY = destinationY;
-	}
-
-
 
 	public int getDestinationMargin() {
 		return destinationMargin;
@@ -199,17 +155,25 @@ public class UserParaHistory {
 	
 	@Override
 	public String toString() {
-		return userName +"@"+ startTime +"@"+ startTimeMargin +"@"+ endTime +"@"+ endTimeMargin +"@"
+		return traceId +"@"+ userName +"@"+ startTime +"@"+ startTimeMargin +"@"+ endTime +"@"+ endTimeMargin +"@"
 				+ departure + "@"
-				+ departureX +"@"+ departureY +"@"+ departureMargin +"@"+ destinationX +"@"+ destinationY +"@"
+				+"@"+ departureMargin +"@"+ destination +"@"
 				+ destinationMargin +"@"+ departureDate +"@"+ updateTime;
 	}
 
-	public Blob getDeparture() {
+	public Object getDeparture() {
 		return departure;
 	}
 
-	public void setDeparture(Blob departure) {
+	public void setDeparture(Object departure) {
 		this.departure = departure;
+	}
+
+	public int getTraceId() {
+		return traceId;
+	}
+
+	public void setTraceId(int traceId) {
+		this.traceId = traceId;
 	}
 }
