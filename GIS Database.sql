@@ -8,7 +8,7 @@ CREATE TABLE `userinfo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `userparahistory` (
-  `id` int(11) NOT NULL,
+  `traceId` int(11) NOT NULL,
   `userName` varchar(45) NOT NULL,
   `startTime` datetime DEFAULT NULL,
   `startTimeMargin` int(11) DEFAULT NULL,
