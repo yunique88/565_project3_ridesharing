@@ -1,3 +1,6 @@
+CREATE DATABASE GIS;
+use GIS;
+
 CREATE TABLE `userinfo` (
   `UserName` varchar(45) NOT NULL,
   `Password` varchar(45) DEFAULT NULL,
@@ -8,11 +11,11 @@ CREATE TABLE `userinfo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `userparahistory` (
-  `traceId` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `userName` varchar(45) NOT NULL,
-  `startTime` datetime DEFAULT NULL,
+  `startTime` time(6) DEFAULT NULL,
   `startTimeMargin` int(11) DEFAULT NULL,
-  `endTime` datetime DEFAULT NULL,
+  `endTime` time(6) DEFAULT NULL,
   `endTimeMargin` int(11) DEFAULT NULL,
   `departure` point DEFAULT NULL,
   `departureMargin` int(11) DEFAULT NULL,
@@ -42,20 +45,24 @@ set @ls1 = ST_GeomFromText('LINESTRING(868.4 361.1, 879.6 386.8, 919.3 400.2, 90
 
 INSERT INTO userinfo VALUES('jon', 'pass', '2539704185', pointn(@ls, 1), pointn(@ls, numpoints(@ls)));
 INSERT INTO userinfo VALUES('bob', 'pass', '2539704185', pointn(@ls1, 1), pointn(@ls1, numpoints(@ls1)));
-
+INSERT INTO userinfo VALUES('temp', '', '', pointn(@ls1, 1), pointn(@ls1, numpoints(@ls1)));
 
 INSERT INTO usertraces VALUES(1, "jon", @ls, @ls);# second ls/ls1 is just a stand in to test the algorithm
 INSERT INTO usertraces VALUES(2, "bob", @ls1, @ls1);
 
 #******************** getMatch() procedure
+#CALL `gis`.`getMatchOnLineString`(<{LatLong linestring}>, <{timeString linestring}>, <{startTime time}>, <{startTimeMargin double}>, <{endTime time}>, <{endTimeMargin double}>, <{departure Point}>, <{departMargin double}>, <{destination Point}>, <{destinationMargin double}>, <{departureDate double}>);
+#CALL `gis`.`getMatchOnTraceID`(<{matchID INT}>, <{startTime time}>, <{startTimeMargin double}>, <{endTime time}>, <{endTimeMargin double}>, <{departure Point}>, <{departMargin double}>, <{destination Point}>, <{destinationMargin double}>, <{departureDate double}>);
+
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getMatch`(matchID INT, startTime double, startTimeMargin double, endTime double, endTimeMargin double,
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getMatchOnLineString`(LatLong linestring, timeString linestring, startTime time, startTimeMargin double, endTime time, endTimeMargin double,
 	departure Point, departMargin double, destination Point, destinationMargin double, departureDate double)
 BEGIN
-declare n, i, id, clusterN int;
+declare n, i, id, clusterN, matchID int;
 declare ls, t linestring;
-	# call findoptimal for each trace in database
+	INSERT INTO usertraces (userName, Coords, `Time`) values ('temp',LatLong, timeString);
+    Select TraceId from usertraces where userName = 'temp' AND Coords = LatLong AND `Time` = timeString INTO matchID;
     Select COUNT(*) from USERTraces into n;
     truncate coordstable;
     truncate finalmatch;
@@ -63,20 +70,36 @@ declare ls, t linestring;
     set i = 0;
     repeat
 		(select TraceId, coords, `time` from USERTraces limit i, 1 INTO id, ls, t);
-        #select x(pointn(ls,1));
 		call FindOptimal(ls, id, t);
 		set i = i + 1;
     until i > n-1 end repeat;
+    Call DBScan(greatest(departMargin, destinationMargin), 2, startTimeMargin * 60, endTimeMargin * 60); #e, minPts);
     
-    Call DBScan(10, 2); #e, minPts);
-    
-    # check the cluster for parameters
-    #SET SQL_SAFE_UPDATES = 0;
     select cluster from dbscantemp where LineName = matchID limit 1 into clusterN;
-    #delete from dbscantemp where cluster <> clusterN;
-    #push into finalMatch table from userTraces where cluserN = clusterN. 
     INSERT INTO finalmatch SELECT TraceId, userName, Coords, `time`, clusterN from usertraces where TraceID IN (select LineName from dbscantemp where cluster = clusterN);
-	#SET SQL_SAFE_UPDATES = 1;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getMatchOnTraceID`(matchID INT, startTime time, startTimeMargin double, endTime time, endTimeMargin double,
+	departure Point, departMargin double, destination Point, destinationMargin double, departureDate double)
+BEGIN
+declare n, i, id, clusterN int;
+declare ls, t linestring;
+    Select COUNT(*) from USERTraces into n;
+    truncate coordstable;
+    truncate finalmatch;
+
+    set i = 0;
+    repeat
+		(select TraceId, coords, `time` from USERTraces limit i, 1 INTO id, ls, t);
+		call FindOptimal(ls, id, t);
+		set i = i + 1;
+    until i > n-1 end repeat;
+    Call DBScan(greatest(departMargin, destinationMargin), 2, startTimeMargin * 60, endTimeMargin * 60); #e, minPts);
+    
+    select cluster from dbscantemp where LineName = matchID limit 1 into clusterN;
+    INSERT INTO finalmatch SELECT TraceId, userName, Coords, `time`, clusterN from usertraces where TraceID IN (select LineName from dbscantemp where cluster = clusterN);
 END$$
 DELIMITER ;
 
@@ -137,21 +160,29 @@ CREATE TABLE `neighborptsprime` (
 # *************************** cluster algorithm prodecures/functions
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `DBScan`(e INT, minPts INT)
+CREATE DEFINER=`root`@`localhost` FUNCTION `correctTimeMargins`(time1 INT, time2 INT, margin INT) RETURNS tinyint(1)
+BEGIN
+	return (abs(time1 - time2) <= margin);
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DBScan`(e INT, minPts INT, startMargin INT, endMargin INT)
 BEGIN
 	Declare C int;
-    Declare p linestring;
+    Declare p, t linestring;
 	SET C = 0;
     truncate dbscantemp;
     INSERT INTO DBScanTemp (LineName, Coords, `Time`) Select TraceID, Coords, `time` from coordstable;
     REPEAT
-		SELECT coords INTO p from DBScanTemp where visited = false limit 1;
+		SELECT coords, `time`from DBScanTemp where visited = false limit 1 INTO p, t;
         UPDATE DBScanTemp set visited = true; 
         INSERT INTO NeighborPts (SELECT * from DBScanTemp where visited = false AND buffer(pointn(p,1), e)
-			AND NOT id IN(select id from NeighborPts));
+			AND NOT id IN(select id from NeighborPts) AND correctTimeMargins(y(pointn(`time`,1)), y(pointn(t,1)), startMargin) 
+            AND correctTimeMargins(y(pointn(`time`,2)), y(pointn(t,2)), endMargin));
         if ((SELECT Count(Coords) from NeighborPts) >= minPts) then
 			SET C = C + 1;
-            Call ExpandCluster(C, P, e, minPts);
+            Call ExpandCluster(C, P, e, minPts, startMargin, endMargin);
 		end if;
         TRUNCATE NeighborPts;
         TRUNCATE NeighborPtsPrime;
@@ -160,7 +191,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ExpandCluster`(C INT, P LINESTRING, e INT, minPts INT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ExpandCluster`(C INT, P LINESTRING, e INT, minPts INT, startMargin INT, endMargin INT)
 BEGIN
 	Declare p point;
 	UPDATE DBScanTemp set cluster = C where Coords = P;
@@ -169,7 +200,9 @@ BEGIN
         UPDATE NeighborPts SET visited = true where coords = p;
         INSERT INTO NeighborPtsPrime (SELECT buffer(pointn(p,1), e) from DBScanTemp where visited = false);
         if ((SELECT Count(Coords) from NeighborPtsPrime) >= minPts) then
-			INSERT INTO NeighborPts (SELECT * from NeighborPtsPrime where NOT id IN(select id from NeighborPts));
+			INSERT INTO NeighborPts (SELECT * from NeighborPtsPrime where NOT id IN(select id from NeighborPts)
+             AND correctTimeMargins(y(pointn(`time`,1)), y(pointn(t,1)), startMargin) 
+            AND correctTimeMargins(y(pointn(`time`,2)), y(pointn(t,2)), endMargin));
 		end if;
         if ((SELECT cluster from DBScanTemp where coords = p) = 0) then
 			UPDATE DBScanTemp set cluster = C where coords = p;
