@@ -29,20 +29,24 @@ CREATE TABLE `userparahistory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `usertraces` (
-  `TraceId` int(11) NOT NULL,
+  `TraceId` int(11) NOT NULL AUTO_INCREMENT,
   `userName` varchar(45) NOT NULL,
-  `Coords` linestring DEFAULT NULL,
-  `Time` linestring DEFAULT NULL,
+  `Coords` linestring NOT NULL,
+  `Time` linestring NOT NULL,
   PRIMARY KEY (`TraceId`),
   KEY `Username_idx` (`userName`),
+  SPATIAL KEY `index1` (`Coords`),
   CONSTRAINT `Username1` FOREIGN KEY (`userName`) REFERENCES `userinfo` (`UserName`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=178 DEFAULT CHARSET=utf8;
 
 #******************** 2 test datasets
 
 set @ls = ST_GeomFromText('LINESTRING(872.9 354.9, 901.9 395.0, 904.6 414.0, 903.8 400.5, 896.9 400.5, 901.7 414.2, 902.2 413.8, 908.4 433.5, 911.3 413.3, 909.6 425.7, 907.0 428.8, 911.1 424.7, 898.4 442.0, 903.4 438.8, 908.0 448.4, 897.5 445.7, 895.0 446.7, 889.9 455.5, 868.4 504.7, 849.9 473.4, 846.9 445.3, 845.9 451.4, 845.8 456.3, 877.0 456.6, 883.1 465.8, 834.0 481.5, 855.5 363.4, 858.8 365.4, 866.6 359.6, 869.3 360.7, 871.9 364.4, 874.5 375.0, 895.5 388.8, 928.7 384.6, 940.8 363.4, 936.9 353.2, 934.8 382.7, 909.7 394.4, 894.4 361.3, 894.0 366.9, 868.4 397.8, 855.4 392.7, 869.0 375.2, 884.6 412.8, 858.8 456.8, 862.5 460.9, 866.5 452.6, 861.3 449.8, 878.5 484.3, 866.7 466.8, 866.9 456.6, 882.8 439.8, 884.1 435.5, 896.3 419.8, 908.0 430.2, 909.9 421.2, 933.7 406.0, 925.9 397.1, 942.3 348.3, 945.2 329.8, 926.3 331.0, 935.6 334.5, 927.1 319.5, 930.3 335.0, 930.8 329.9, 941.3 338.5, 933.8 358.3, 891.8 345.0, 893.8 348.0, 877.9 343.7, 871.3 336.3, 868.0 343.8, 870.4 342.7, 869.3 345.6, 876.2 356.3, 863.8 322.1, 860.5 330.2, 886.6 324.7, 893.6 352.2, 893.2 359.1, 888.6 351.3, 890.8 355.3, 879.1 367.3, 840.7 378.7)');
 set @ls1 = ST_GeomFromText('LINESTRING(868.4 361.1, 879.6 386.8, 919.3 400.2, 904.3 408.1, 884.9 455.3, 903.8 446.8, 902.2 446.9, 882.6 440.3, 882.7 445.4, 868.8 442.0, 859.8 436.6, 876.0 419.8, 858.9 397.7, 856.6 386.3, 860.9 398.0, 883.3 362.1, 887.0 342.5, 906.2 361.5, 870.0 383.1, 880.8 407.8, 885.2 445.6, 897.8 442.5, 855.3 375.3, 853.9 398.8, 839.1 386.3, 850.8 403.3, 855.6 384.3, 841.4 364.0, 855.0 353.3, 876.6 388.7, 885.5 450.7, 889.4 432.2, 912.3 387.1, 913.0 332.3, 910.8 339.4, 911.8 335.2, 913.5 327.6, 912.5 348.0, 897.8 338.9, 900.8 336.7, 898.4 331.0, 883.3 321.4, 866.9 336.0, 867.8 333.8, 870.1 323.7, 895.1 349.1, 885.9 345.9, 880.2 350.7, 859.7 342.8, 852.2 345.3, 907.3 362.7, 898.0 336.1, 913.2 343.0, 898.4 337.0, 861.6 364.3, 865.5 389.0, 934.8 380.8, 864.1 311.7, 853.5 350.8, 862.7 341.2, 872.0 352.5, 868.6 318.0, 877.8 318.7, 900.2 336.3, 890.3 338.3, 871.0 329.2, 838.6 353.8, 837.8 354.2, 850.8 345.7, 869.8 381.8, 903.1 438.9, 898.5 435.9, 894.3 427.1, 849.2 400.3, 868.2 342.0, 870.2 346.9, 886.7 333.2, 912.9 355.9, 931.7 368.5, 894.5 343.2, 877.4 341.2, 878.8 341.0, 876.3 338.5, 874.8 340.7)');
-
+INSERT INTO userinfo VALUES('steve', 'pass', '2539704185', pointn(@ls1, 1), pointn(@ls1, numpoints(@ls1)));
+INSERT INTO userinfo VALUES('jacob', 'pass', '2539704185', pointn(@ls1, 1), pointn(@ls1, numpoints(@ls1)));
+INSERT INTO userinfo VALUES('mike', 'pass', '2539704185', pointn(@ls1, 1), pointn(@ls1, numpoints(@ls1)));
+INSERT INTO userinfo VALUES('jane', 'pass', '2539704185', pointn(@ls1, 1), pointn(@ls1, numpoints(@ls1)));
 INSERT INTO userinfo VALUES('jon', 'pass', '2539704185', pointn(@ls, 1), pointn(@ls, numpoints(@ls)));
 INSERT INTO userinfo VALUES('bob', 'pass', '2539704185', pointn(@ls1, 1), pointn(@ls1, numpoints(@ls1)));
 INSERT INTO userinfo VALUES('temp', '', '', pointn(@ls1, 1), pointn(@ls1, numpoints(@ls1)));
@@ -56,8 +60,8 @@ INSERT INTO usertraces VALUES(2, "bob", @ls1, @ls1);
 
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getMatchOnLineString`(LatLong linestring, timeString linestring, startTime time, startTimeMargin double, endTime time, endTimeMargin double,
-	departure Point, departMargin double, destination Point, destinationMargin double, departureDate double)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getMatchOnLineString`(LatLong linestring, timeString linestring, startTime time, startTimeMargin INT, endTime time, endTimeMargin INT,
+	departure Point, departMargin double, destination Point, destinationMargin double, departureDate date)
 BEGIN
 declare n, i, id, clusterN, matchID int;
 declare ls, t linestring;
@@ -73,7 +77,7 @@ declare ls, t linestring;
 		call FindOptimal(ls, id, t);
 		set i = i + 1;
     until i > n-1 end repeat;
-    Call DBScan(greatest(departMargin, destinationMargin), 2, startTimeMargin * 60, endTimeMargin * 60); #e, minPts);
+    Call DBScan(greatest(departMargin, destinationMargin), 2, startTimeMargin, endTimeMargin); #e, minPts);
     
     select cluster from dbscantemp where LineName = matchID limit 1 into clusterN;
     INSERT INTO finalmatch SELECT TraceId, userName, Coords, `time`, clusterN from usertraces where TraceID IN (select LineName from dbscantemp where cluster = clusterN);
@@ -81,22 +85,23 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getMatchOnTraceID`(matchID INT, startTime time, startTimeMargin double, endTime time, endTimeMargin double,
-	departure Point, departMargin double, destination Point, destinationMargin double, departureDate double)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getMatchOnTraceID`(matchID INT, historyID INT)
 BEGIN
-declare n, i, id, clusterN int;
+declare n, i, id, clusterN, stm, etm int;
 declare ls, t linestring;
+declare depm, desm double;
     Select COUNT(*) from USERTraces into n;
     truncate coordstable;
     truncate finalmatch;
-
+	Select startTimeMargin, endTimeMargin, departureMargin, destinationMargin, departureDate from userparahistory where id = historyID
+		INTO stm, etm, depm, desm;
     set i = 0;
     repeat
 		(select TraceId, coords, `time` from USERTraces limit i, 1 INTO id, ls, t);
 		call FindOptimal(ls, id, t);
 		set i = i + 1;
     until i > n-1 end repeat;
-    Call DBScan(greatest(departMargin, destinationMargin), 2, startTimeMargin * 60, endTimeMargin * 60); #e, minPts);
+    Call DBScan(greatest(depm, desm), 2, stm, etm); #e, minPts);
     
     select cluster from dbscantemp where LineName = matchID limit 1 into clusterN;
     INSERT INTO finalmatch SELECT TraceId, userName, Coords, `time`, clusterN from usertraces where TraceID IN (select LineName from dbscantemp where cluster = clusterN);
@@ -109,7 +114,8 @@ DELIMITER ;
 CREATE TABLE `coordstable` (
   `TraceID` int(11) DEFAULT NULL,
   `Coords` linestring DEFAULT NULL,
-  `time` linestring DEFAULT NULL
+  `time` linestring DEFAULT NULL,
+  SPATIAL KEY `index2` (`Coords`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `dbscantemp` (
@@ -119,7 +125,8 @@ CREATE TABLE `dbscantemp` (
   `Time` linestring DEFAULT NULL,
   `Visited` tinyint(1) DEFAULT '0',
   `cluster` int(11) DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),   
+  SPATIAL KEY `index3` (`Coords`)
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `debug` (
@@ -143,7 +150,8 @@ CREATE TABLE `neighborpts` (
   `Time` linestring DEFAULT NULL,
   `Visited` tinyint(1) DEFAULT '0',
   `cluster` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`), 
+  SPATIAL KEY `index4` (`Coords`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `neighborptsprime` (
@@ -153,7 +161,8 @@ CREATE TABLE `neighborptsprime` (
   `Time` linestring DEFAULT NULL,
   `Visited` tinyint(1) DEFAULT '0',
   `cluster` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`), 
+  SPATIAL KEY `index5` (`Coords`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -162,7 +171,7 @@ CREATE TABLE `neighborptsprime` (
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` FUNCTION `correctTimeMargins`(time1 INT, time2 INT, margin INT) RETURNS tinyint(1)
 BEGIN
-	return (abs(time1 - time2) <= margin);
+	return (abs(time1 - time2)*1440 <= margin);
 END$$
 DELIMITER ;
 
