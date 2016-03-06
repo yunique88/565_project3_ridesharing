@@ -1,15 +1,24 @@
 package controller;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
-import java.awt.Point;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.postgis.LineString;
+import org.postgis.Point;
 
 import model.UserTraces;
 
@@ -48,58 +57,102 @@ public class FindMatchServlet extends HttpServlet {
 		
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
-		
+	
 		int traceID = 0;
-		if (request.getParameter("traceID") != null){
+		if (request.getParameter("traceID") != null && !request.getParameter("traceID").equals("")){
 			traceID = new Integer(request.getParameter("traceID"));
 		}
 		String userName = request.getParameter("userName");
 		String startTime = request.getParameter("startTime");
 		int startTimeMargin = 0;
-		if (request.getParameter("startTimeMargin") != null){
+		if (request.getParameter("startTimeMargin") != null  && !request.getParameter("startTimeMargin").equals("")){
 			startTimeMargin = new Integer(request.getParameter("startTimeMargin"));
 		}
 		 
 		String endTime = request.getParameter("endTime");
 		int endTimeMargin = 0;
-		if (request.getParameter("endTimeMargin") != null){
+		if (request.getParameter("endTimeMargin") != null  && !request.getParameter("endTimeMargin").equals("")){
 			startTimeMargin = new Integer(request.getParameter("endTimeMargin"));
 		}
 		
+		String departurePoint = request.getParameter("departure");
 		Point departure = null;
-		if (request.getParameter("departureX") != null && request.getParameter("departureY") != null){
-			departure = new Point(new Integer(request.getParameter("departureX")),new Integer(request.getParameter("departureY")));
-			
+		if (departurePoint != null && !departurePoint.equals("")){
+			String[] departureXY = departurePoint.split(",");
+	        double latitude = Double.parseDouble(departureXY[0].substring(1));
+	        double longitude = Double.parseDouble(departureXY[1].substring(1, departureXY[1].length()-1));
+	        departure = new Point(longitude,latitude);
 		}
 		
-		int departureMargin = 0;
-		if (request.getParameter("departureMargin") != null){
-			startTimeMargin = new Integer(request.getParameter("departureMargin"));
+		Double departureMargin = 0.0;
+		if (request.getParameter("departureMargin") != null  && !request.getParameter("departureMargin").equals("")){
+			departureMargin = Double.parseDouble(request.getParameter("departureMargin"));
 		}
 		
+		String destinationPoint = request.getParameter("destination");
 		Point destination = null;
-		if (request.getParameter("destinationX") != null && request.getParameter("destinationY") != null){
-			departure = new Point(new Integer(request.getParameter("destinationX")),new Integer(request.getParameter("destinationY")));
-			
+		if (destinationPoint != null && !destinationPoint.equals("")){
+			String[] destinationXY = destinationPoint.split(",");
+	        double latitude = Double.parseDouble(destinationXY[0].substring(1));
+	        double longitude = Double.parseDouble(destinationXY[1].substring(1, destinationXY[1].length()-1));
+	        destination = new Point(longitude,latitude);
+	        
 		}
-		int destinationMargin = 0;
-		if (request.getParameter("destinationMargin") != null){
-			destinationMargin = new Integer(request.getParameter("destinationMargin"));
+		
+		Double destinationMargin = 0.0;
+		if (request.getParameter("destinationMargin") != null  && !request.getParameter("destinationMargin").equals("")){
+			destinationMargin = Double.parseDouble(request.getParameter("destinationMargin"));
 		}
+		
+		
 		String departureDate = request.getParameter("departureDate");
+		System.out.println("----------departureDate:"+departureDate);
+		/*
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = null;
+		try {
+			date = formatter.format(date)formatter.parse(departureDate);
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		System.out.println("----------Date:"+date);
+		*/
 		double matchRate = 0.0;
-		if (request.getParameter("matchRate") != null){
+		if (request.getParameter("matchRate") != null  && !request.getParameter("matchRate").equals("")){
 			matchRate = new Integer(request.getParameter("matchRate"));
 		}
 		
-		System.out.println("querying " + traceID);
-		UserTracesDAO userTracesDAO = new UserTracesDAO();
+		LineString coords = null;  
+	    String sRoutePoints = request.getParameter("routePoints");
+	    if(sRoutePoints != null && !sRoutePoints.equals("")){
+	    	JSONParser parser = new JSONParser();
+	    	System.out.println("sRoutePoints"+sRoutePoints);
+		      try{ 
+		         Object obj = parser.parse(sRoutePoints);
+		         JSONArray array = (JSONArray)obj;
+		         Point[] points = new Point[array.size()];
+		         for (int i = 0; i < array.size(); i++){
+		        	 JSONObject objVal = (JSONObject)array.get(i);
+		        	 double pointLong = (double) objVal.get("longitude");
+		        	 double pointLat = (double) objVal.get("latitude");
+		        	 points[i] = new Point(pointLong,pointLat);
+		         }
+		        coords = new LineString(points);
+		      } catch (org.json.simple.parser.ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+	    }  
+		System.out.println("-----find matches for [departure: " + departure+ ", destination: " + destination+"]");
+		System.out.println("-----coords"+coords);
 		
+		UserTracesDAO userTracesDAO = new UserTracesDAO();
 		try {
 			ArrayList<UserTraces> userTracesList = userTracesDAO.findMatch(traceID, userName,
 					 startTime, startTimeMargin, endTime, endTimeMargin, departure,
 					 departureMargin, destination, destinationMargin,
-					 departureDate, matchRate);
+					 departureDate, matchRate, coords);
 			 
 			if(userTracesList == null) {
 				response.setStatus(404);
